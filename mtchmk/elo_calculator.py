@@ -1,4 +1,4 @@
-from src.player import Player
+from .player import Player
 
 
 class EloCalculator:

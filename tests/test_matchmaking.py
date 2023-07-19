@@ -1,7 +1,7 @@
 import unittest
-from src.player import Player
-from src.match import Match
-from src.matchmaking import Matchmaking
+import mtchmk
+from mtchmk.player import Player
+from mtchmk.matchmaking import Matchmaking
 
 
 class TestMatchmaking(unittest.TestCase):

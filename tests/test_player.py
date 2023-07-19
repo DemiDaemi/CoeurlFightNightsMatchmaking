@@ -1,5 +1,6 @@
 import unittest
-from src.player import Player
+import mtchmk
+from mtchmk.player import Player
 
 
 class TestPlayer(unittest.TestCase):

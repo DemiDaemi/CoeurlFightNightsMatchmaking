@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.player import Player
+from .player import Player
 
 
 class Match:

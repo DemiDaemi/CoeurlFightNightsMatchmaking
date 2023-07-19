@@ -1,6 +1,6 @@
 import unittest
-from src.player import Player
-from src.elo_calculator import EloCalculator
+from mtchmk.player import Player
+from mtchmk.elo_calculator import EloCalculator
 
 
 class TestEloCalculator(unittest.TestCase):
