@@ -1,4 +1,5 @@
 from player import Player
+from datetime import datetime
 
 
 class Match:
@@ -8,6 +9,7 @@ class Match:
         self.result = (0, 0)  # (player1 score, player2 score)
         self.rounds = rounds  # "best of X" rounds
         self.match_winner = None  # Player object
+        self.timestamp = datetime.now()
 
     def set_results(self, round_winner: Player):
         if round_winner == self.player1:
