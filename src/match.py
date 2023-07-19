@@ -25,4 +25,6 @@ class Match:
             )
 
     def __str__(self) -> str:
-        return f"{str(self.player1)} vs {str(self.player2)} - ({self.result[0] - self.result[1]})"
+        return (
+            f"{self.player1} vs {self.player2}: ({self.result[0]} - {self.result[1]})"
+        )
