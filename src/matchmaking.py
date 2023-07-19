@@ -11,7 +11,7 @@ class Matchmaking:
             players, key=lambda p: p.rating
         )  # Sort players by rating
 
-        matches = []
+        matches: List[Match] = []
         while len(sorted_players) >= 2:
             player1 = sorted_players.pop()
             player2 = sorted_players.pop()
