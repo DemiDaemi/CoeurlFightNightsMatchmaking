@@ -4,4 +4,8 @@ Matchmaking system for Coeurl Fight Nights Discord server. Used to create a matc
 
 ## How to use
 
-To run tests: `python -m unittest discover -s ./tests`
+To run tests: 
+```
+python -m unittest discover
+```
+from the root directory. 
