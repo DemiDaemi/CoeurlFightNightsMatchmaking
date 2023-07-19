@@ -17,4 +17,4 @@ class Player:
         self.rating = new_rating
 
     def __str__(self) -> str:
-        return f"Player: {self.name}, World: {self.world}, FFXIV: {self.ffxiv_character}, Rating: {self.rating}"
+        return f"{self.name} - {self.world} ({self.rating})"
