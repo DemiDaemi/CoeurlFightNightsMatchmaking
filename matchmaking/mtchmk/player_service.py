@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import uuid
 from matchmaking.mtchmk.player import Player, Verification
@@ -9,6 +8,8 @@ from matchmaking.api.xiv_api import (
     fetch_character_by_name,
     fetch_bio_by_lodestone_id,
 )
+
+logging.basicConfig(level=logging.INFO, format="%(message)s", datefmt="%H:%M")
 
 
 async def add_new_player(
@@ -27,9 +28,9 @@ async def add_new_player(
             session.commit()
         except Exception as e:
             session.rollback()  # Rollback the changes on error
-            print(f"An error occurred while adding a new player: {e}")
+            logging.exception(f"An error occurred while adding a new player: {e}")
         else:
-            print(f"Added new player: {new_player}")
+            logging.info(f"Added new player: {new_player}")
 
 
 def generate_verification_code():
@@ -92,10 +93,12 @@ async def start_verification(character_id, discord_account_id=None):
                 session.commit()
             except Exception as e:
                 session.rollback()
-                print(f"An error occurred when starting verification process: {e}")
+                logging.exception(
+                    f"An error occurred when starting verification process: {e}"
+                )
             else:
-                print(f"Started verification process for {character_id}")
-                print(f"Verification code: {verif_code}")
+                logging.info(f"Started verification process for {character_id}")
+                logging.info(f"Verification code: {verif_code}")
                 return verif_code
 
 
@@ -107,11 +110,9 @@ async def verify_code_from_discord(discord_account_id):
             .filter_by(discord_account_id=discord_account_id)
             .first()
         )
-        print(verification)
         if verification != None:
             verif_code = verification.verification_code
             character_id = verification.character_id
-            print(f"{verif_code}")
             bio = await fetch_bio_by_lodestone_id(character_id)
             if bio != None:
                 # Check if the verification code is somewhere in the character bio
@@ -130,44 +131,3 @@ async def verify_code_from_discord(discord_account_id):
                 return False
         else:
             return False
-
-
-async def verify_code_from_bio(character_id):
-    # Fetch the character and code from the DB
-    with DBSession() as session:
-        verification = (
-            session.query(Verification).filter_by(character_id=character_id).first()
-        )
-        if verification != None:
-            verif_code = verification.verification_code
-            bio = await fetch_bio_by_lodestone_id(character_id)
-            if bio != None:
-                # Check if the verification code is somewhere in the character bio
-                if bio.find(verif_code) != -1:
-                    character = await fetch_character_by_id(character_id)
-                    await add_new_player(
-                        name=character["Character"]["Name"],
-                        discord_account_id=None,
-                        ffxiv_character_id=character_id,
-                        world=character["Character"]["Server"],
-                    )
-                    return True
-                else:
-                    return False
-            else:
-                return False
-        else:
-            return False
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(message)s", datefmt="%H:%M")
-    loop = asyncio.get_event_loop()
-    # verif_code = loop.run_until_complete(start_verification(38151114))
-
-    # print(verif_code)
-    loop.run_until_complete(verify_code_from_bio(38151114))
-    # toon = loop.run_until_complete(fetch_character_by_name("Demi", "Daemi", "Ultros"))
-    # print(toon)
-    # character = loop.run_until_complete(fetch_character_by_id(38151114))
-    # print(character)
