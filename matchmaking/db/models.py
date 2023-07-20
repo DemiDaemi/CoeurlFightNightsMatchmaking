@@ -10,8 +10,8 @@ class Player(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    discord_account = Column(String)
-    ffxiv_character = Column(String)
+    discord_account_id = Column(String)
+    ffxiv_character_id = Column(String)
     world = Column(String)
     rating = Column(Float)
 
