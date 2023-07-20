@@ -1,4 +1,3 @@
-import asyncio
 from discord.ext import commands
 from matchmaking.mtchmk.player_service import (
     start_verification,
