@@ -1,30 +1,35 @@
-from datetime import datetime
-from player import Player
+from sqlalchemy import Column, Integer, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 
-class Match:
-    def __init__(self, player1: Player, player2: Player, rounds: int = 3):
-        self.player1 = player1
-        self.player2 = player2
-        self.result = (0, 0)  # (player1 score, player2 score)
-        self.rounds = rounds  # "best of X" rounds
-        self.match_winner = None  # Player object
-        self.timestamp = datetime.now()
+class Match(Base):
+    __tablename__ = "matches"
 
-    def set_results(self, round_winner: Player):
-        if round_winner == self.player1:
-            self.result = (self.result[0] + 1, self.result[1])
-        elif round_winner == self.player2:
-            self.result = (self.result[0], self.result[1] + 1)
+    id = Column(Integer, primary_key=True)
+    player1_id = Column(Integer)
+    player2_id = Column(Integer)
+    player1_score = Column(Integer)
+    player2_score = Column(Integer)
+    rounds = Column(Integer)
+    match_winner_id = Column(Integer)
+    timestamp = Column(DateTime)
+
+    def __repr__(self) -> str:
+        return f"{self.player1_id} vs {self.player2_id}: ({self.player1_score} - {self.player2_score})"
+
+    def set_results(self, round_winner_id: int):
+        if round_winner_id == self.player1_id:
+            self.player1_score += 1
+        elif round_winner_id == self.player2_id:
+            self.player2_score += 1
         else:
             raise ValueError("Winner must be one of the players in the match")
 
-        if self.result[0] > self.rounds / 2 or self.result[1] > self.rounds / 2:
-            self.match_winner = (
-                self.player1 if self.result[0] > self.result[1] else self.player2
+        if self.player1_score > self.rounds / 2 or self.player2_score > self.rounds / 2:
+            self.match_winner_id = (
+                self.player1_id
+                if self.player1_score > self.player2_score
+                else self.player2_id
             )
-
-    def __str__(self) -> str:
-        return (
-            f"{self.player1} vs {self.player2}: ({self.result[0]} - {self.result[1]})"
-        )
