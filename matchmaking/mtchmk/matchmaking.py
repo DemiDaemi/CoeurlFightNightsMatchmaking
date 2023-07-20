@@ -1,6 +1,6 @@
 from typing import List
-from .player import Player
-from .match import Match
+from player import Player
+from match import Match
 
 
 class Matchmaking:
