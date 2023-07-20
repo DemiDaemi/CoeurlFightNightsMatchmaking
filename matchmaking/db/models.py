@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+import sqlalchemy.orm as orm
 
-Base = declarative_base()
+Base = orm.declarative_base()
 
 
 class Player(Base):
