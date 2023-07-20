@@ -37,14 +37,54 @@ def generate_verification_code():
     return f"fighter-{uuid.uuid4()}"
 
 
-async def start_verification(character_id):
+def discord_id_registered(discord_account_id):
+    with DBSession() as session:
+        player = (
+            session.query(Player)
+            .filter_by(discord_account_id=discord_account_id)
+            .first()
+        )
+        if player != None:
+            return True
+        else:
+            return False
+
+
+def discord_id_verifying(discord_account_id):
+    with DBSession() as session:
+        player = (
+            session.query(Verification)
+            .filter_by(discord_account_id=discord_account_id)
+            .first()
+        )
+        if player != None:
+            return True
+        else:
+            return False
+
+
+async def obtain_character_id_from_name(surname, lastname, world):
+    character = await fetch_character_by_name(surname, lastname, world)
+    if character != None:
+        try:
+            character_id = character["Results"][0]["ID"]
+            return character_id
+        except IndexError:
+            return None
+    else:
+        return None
+
+
+async def start_verification(character_id, discord_account_id=None):
     # Start the verification process for the character
     character = await fetch_character_by_id(character_id)
     if character != None:
         verif_code = generate_verification_code()
         with DBSession() as session:
             new_verification = Verification(
-                character_id=character_id, verification_code=verif_code
+                character_id=character_id,
+                verification_code=verif_code,
+                discord_account_id=discord_account_id,
             )
             session.add(new_verification)
 
@@ -57,6 +97,39 @@ async def start_verification(character_id):
                 print(f"Started verification process for {character_id}")
                 print(f"Verification code: {verif_code}")
                 return verif_code
+
+
+async def verify_code_from_discord(discord_account_id):
+    # Fetch the character and code from the DB
+    with DBSession() as session:
+        verification = (
+            session.query(Verification)
+            .filter_by(discord_account_id=discord_account_id)
+            .first()
+        )
+        print(verification)
+        if verification != None:
+            verif_code = verification.verification_code
+            character_id = verification.character_id
+            print(f"{verif_code}")
+            bio = await fetch_bio_by_lodestone_id(character_id)
+            if bio != None:
+                # Check if the verification code is somewhere in the character bio
+                if bio.find(verif_code) != -1:
+                    character = await fetch_character_by_id(character_id)
+                    await add_new_player(
+                        name=character["Character"]["Name"],
+                        discord_account_id=discord_account_id,
+                        ffxiv_character_id=character_id,
+                        world=character["Character"]["Server"],
+                    )
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
 
 
 async def verify_code_from_bio(character_id):
@@ -98,50 +171,3 @@ if __name__ == "__main__":
     # print(toon)
     # character = loop.run_until_complete(fetch_character_by_id(38151114))
     # print(character)
-
-
-# async def verify_character(character_id, verification_code, discord_account_id):
-#     api = XIVAPI()
-#     char_data = api.get_character_data(character_id)
-#     if char_data != None:
-#         char_name = char_data["Character"]["Name"]
-#         char_world = char_data["Character"]["Server"]
-
-#         with DBSession() as session:
-#             # Check if the character is already registered
-#             player = (
-#                 session.query(Player).filter_by(ffxiv_character_id=character_id).first()
-#             )
-#             if player != None:
-#                 print(f"Character {character_id} is already registered.")
-#                 return False
-
-#             # Check if the verification code matches the one in the character data
-#             verification = (
-#                 session.query(Verification).filter_by(character_id=character_id).first()
-#             )
-#             if verification != None:
-#                 if verification.verification_code == verification_code:
-#                     # Verification successful, add the player to the database
-#                     add_new_player(
-#                         name=char_name,
-#                         discord_account_id=discord_account_id,
-#                         ffxiv_character_id=character_id,
-#                         world=char_world,
-#                     )
-
-#                     try:
-#                         session.commit()
-#                     except Exception as e:
-#                         session.rollback()
-#                         print(f"An error occurred when verifying character: {e}")
-#                     else:
-#                         print(f"Verified character {character_id}")
-#                         return True
-#                 else:
-#                     print("Verification code does not match.")
-#                     return False
-#             else:
-#                 print("Verification code not found.")
-#                 return False
-#     # TODO: Check if the generated verification code matches the one in the character data

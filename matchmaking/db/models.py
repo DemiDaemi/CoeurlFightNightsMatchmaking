@@ -39,5 +39,6 @@ class Verification(Base):
     __tablename__ = "verifications"
 
     id = Column(Integer, primary_key=True)
+    discord_account_id = Column(String)
     character_id = Column(String)
     verification_code = Column(String)
