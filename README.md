@@ -7,8 +7,13 @@ https://github.com/DemiDaemi/CoeurlFightNightsDocs/
 
 ## How to use
 
-To run tests: 
+### To run tests: 
 ```
 python -m unittest discover
 ```
-from the root directory. 
+
+### To run the bot:
+python -m discordbot.botapp.main
+
+### To instantiate the database:
+python -m matchmaking.db.dbsession
