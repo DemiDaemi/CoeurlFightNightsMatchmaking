@@ -13,7 +13,11 @@ python -m unittest discover
 ```
 
 ### To run the bot:
+```
 python -m discordbot.botapp.main
+```
 
 ### To instantiate the database:
+```
 python -m matchmaking.db.dbsession
+```
