@@ -46,10 +46,3 @@ async def fetch_bio_by_lodestone_id(lodestone_id: int):
     ]
     bio = bio[: bio.find("</div>")]
     return bio
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(message)s", datefmt="%H:%M")
-    loop = asyncio.get_event_loop()
-    character = loop.run_until_complete(fetch_bio_by_lodestone_id(11111111111111))
-    print(character)
