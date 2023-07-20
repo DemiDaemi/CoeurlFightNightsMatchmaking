@@ -13,9 +13,9 @@ class Player(Base):
     discord_account_id = Column(String)
     ffxiv_character_id = Column(String)
     world = Column(String)
-    rating = Column(Float)
+    rating = Column(Float, default=1000.0)
 
-    matches = relationship("Match", back_populates="players")
+    # matches = relationship("Match", back_populates="players")
 
     def update_rating(self, new_rating: float):
         self.rating = new_rating

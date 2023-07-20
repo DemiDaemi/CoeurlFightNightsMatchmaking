@@ -9,5 +9,10 @@ with engine.begin() as conn:
     df = pd.read_sql(sql=text(query), con=conn)
 
 print(df.head())
-print(df.info())
-print(df.describe())
+
+query = "SELECT * FROM verifications"
+
+with engine.begin() as conn:
+    df = pd.read_sql(sql=text(query), con=conn)
+
+print(df.head())
